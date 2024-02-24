@@ -1,0 +1,51 @@
+import { Button, VerticalBox, GridBox, LineEdit } from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    title: "Bérkalkulátor";
+    in property <string> results: "";
+    callback divide-income(string);
+    background: black;
+    GridLayout {
+        padding: 40px;
+        spacing: 25px;
+        Row {
+            Text {
+                text: "Bérkalkulátor 2024";
+                horizontal-alignment: center;
+                color: #a600ff;
+                font-size: 24px;
+                font-weight: 1000;
+            }
+        }
+        Row {
+            income := LineEdit {
+                font-size: 16px;            
+                horizontal-alignment: center;
+                placeholder-text: "Bruttó bére (Ft)";
+                height: 40px;
+            }
+        }
+        Row {
+            Button {
+                text: "Kiszámol";
+                primary: true;
+                height: 40px;
+                clicked => {divide-income(income.text)}
+            }
+        }
+        Row {
+            VerticalBox {
+                Rectangle {
+                    height: 300px;
+                    background: #f2f2f2;
+                    Text {
+                        color: black;
+                        font-size: 16px;
+                        font-weight: 500;
+                        text: root.results;
+                    }
+                }
+            }
+        }
+    }
+}
