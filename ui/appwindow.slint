@@ -1,7 +1,7 @@
 import { Button, VerticalBox, GridBox, LineEdit } from "std-widgets.slint";
 
 export component AppWindow inherits Window {
-    title: "Bérkalkulátor";
+    title: @tr("Bérkalkulátor");
     in property <string> results: "";
     callback divide-income(string);
     background: black;
@@ -10,7 +10,7 @@ export component AppWindow inherits Window {
         spacing: 25px;
         Row {
             Text {
-                text: "Bérkalkulátor 2024";
+                text: @tr("Bérkalkulátor 2024");
                 horizontal-alignment: center;
                 color: #a600ff;
                 font-size: 24px;
@@ -21,13 +21,13 @@ export component AppWindow inherits Window {
             income := LineEdit {
                 font-size: 16px;            
                 horizontal-alignment: center;
-                placeholder-text: "Bruttó havi bére (Ft)";
+                placeholder-text: @tr("Bruttó havi bére (Ft)");
                 height: 40px;
             }
         }
         Row {
             Button {
-                text: "Kiszámol";
+                text: @tr("Kiszámol");
                 primary: true;
                 height: 40px;
                 clicked => {divide-income(income.text)}

@@ -1,4 +1,5 @@
 use slint::{SharedString, Weak};
+use std::collections::HashMap;
 
 slint::include_modules!();
 
@@ -19,44 +20,40 @@ struct Berkalkulator {}
 impl Berkalkulator {
     fn calculate_netto_ber(brutto_ber: f64) -> Result<String, String> {
         if brutto_ber <= ZERO {
-            return Err("A megadott érték kissebb mint nulla!".to_owned());
+            return Err("A megadott érték kisebb mint egy!".to_owned());
         }
         if brutto_ber > ONE_HUNDRED_MILLION {
             return Err("A megadott érték túl magas!".to_owned());
         }
         let jarulekok: Vec<Jarulek> = Self::init_jarulekok();
         let mut sum_of_jarulekok: f64 = ZERO;
-        let mut nyugdij_bizt: f64 = ZERO;
-        let mut penzbeni_egeszseg_bizt: f64 = ZERO;
-        let mut term_egeszseg_bizt: f64 = ZERO;
-        let mut szja: f64 = ZERO;
-        let mut munkaero_piaci: f64 = ZERO;
+        let mut calculated_jarulekok_map: HashMap<&str, f64> = HashMap::new();
         for jarulek in jarulekok.iter() {
             match jarulek {
                 Jarulek::NyugdijBizt(amount) => {
                     sum_of_jarulekok = sum_of_jarulekok + amount;
-                    nyugdij_bizt = brutto_ber * amount;
+                    calculated_jarulekok_map.insert("nyugdij_bizt", brutto_ber * amount);
                 }
                 Jarulek::PenzbeniEgeszsegBizt(amount) => {
                     sum_of_jarulekok = sum_of_jarulekok + amount;
-                    penzbeni_egeszseg_bizt = brutto_ber * amount;
+                    calculated_jarulekok_map.insert("penzbeni_egeszseg_bizt", brutto_ber * amount);
                 }
                 Jarulek::TermeszetbeniEgeszsegBizt(amount) => {
                     sum_of_jarulekok = sum_of_jarulekok + amount;
-                    term_egeszseg_bizt = brutto_ber * amount;
+                    calculated_jarulekok_map.insert("term_egeszseg_bizt", brutto_ber * amount);
                 }
                 Jarulek::SZJA(amount) => {
                     sum_of_jarulekok = sum_of_jarulekok + amount;
-                    szja = brutto_ber * amount;
+                    calculated_jarulekok_map.insert("szja", brutto_ber * amount);
                 }
                 Jarulek::MunkaeroPiaci(amount) => {
                     sum_of_jarulekok = sum_of_jarulekok + amount;
-                    munkaero_piaci = brutto_ber * amount;
+                    calculated_jarulekok_map.insert("munkaero_piaci", brutto_ber * amount);
                 }
             }
         }
         let netto_num: f64 = brutto_ber * (ONE - sum_of_jarulekok);
-        let result: String = format!("Járulékok: \n\nNyugdíj-biztosítási járulék: {:.2} Ft\nPénzbeni Egészségbiztosítási járulék: {:.2} Ft\nTermészetbeni Egészségbiztosítási járulék: {:.2} Ft\nSZJA (személyi jövedelemadó): {:.2} Ft\nMunkaerő-piaci járulék: {:.2} Ft\n\nNettó havi bér: {:.2} Ft", nyugdij_bizt, penzbeni_egeszseg_bizt, term_egeszseg_bizt, szja, munkaero_piaci, netto_num);
+        let result: String = format!("Járulékok: \n\nNyugdíj-biztosítási járulék: {:.2} Ft\nPénzbeni Egészségbiztosítási járulék: {:.2} Ft\nTermészetbeni Egészségbiztosítási járulék: {:.2} Ft\nSZJA (személyi jövedelemadó): {:.2} Ft\nMunkaerő-piaci járulék: {:.2} Ft\n\nNettó havi bér: {:.2} Ft", calculated_jarulekok_map.get("nyugdij_bizt").unwrap(), calculated_jarulekok_map.get("penzbeni_egeszseg_bizt").unwrap(), calculated_jarulekok_map.get("term_egeszseg_bizt").unwrap(), calculated_jarulekok_map.get("szja").unwrap(), calculated_jarulekok_map.get("munkaero_piaci").unwrap(), netto_num);
         Ok(result)
     }
 
