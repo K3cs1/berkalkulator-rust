@@ -69,6 +69,8 @@ impl Berkalkulator {
 }
 
 fn main() -> Result<(), slint::PlatformError> {
+    slint::init_translations!(concat!(env!("CARGO_MANIFEST_DIR"), "/i18n/"));
+
     let ui: AppWindow = AppWindow::new()?;
     let ui_handle: Weak<AppWindow> = ui.as_weak();
     ui.on_divide_income(move |string: SharedString| {
