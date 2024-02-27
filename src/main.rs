@@ -84,24 +84,30 @@ impl Berkalkulator {
 fn main() -> Result<(), slint::PlatformError> {
     slint::init_translations!(concat!(env!("CARGO_MANIFEST_DIR"), "/i18n/"));
 
-
     let ui: AppWindow = AppWindow::new()?;
     let ui_handle: Weak<AppWindow> = ui.as_weak();
     ui.on_divide_income(move |string: SharedString| {
         let ui: AppWindow = ui_handle.unwrap();
-        let brutto_ber: f64 = string.trim().parse().unwrap();
+        let brutto_ber = string.trim().parse();
+        let mut brutto_ber_num: f64 = ZERO;
+        match brutto_ber {
+            Ok(response) => {
+                brutto_ber_num = response;
+            }
+            Err(e) => ui.set_results(e.to_string().into()),
+        }
 
-    let mo_file_path = concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/i18n/en/LC_MESSAGES/berkalkulator-rust.mo"
-    );
-    let file = File::open(mo_file_path).expect("could not open the catalog");
-    let catalog = Catalog::parse(file).expect("could not parse the catalog");
-    let berkalkulator = Berkalkulator::calculate_netto_ber(brutto_ber, catalog);
-    match berkalkulator {
-        Ok(response) => ui.set_results(response.into()),
-        Err(e) => ui.set_results(e.into()),
-    }
+        let mo_file_path = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/i18n/en/LC_MESSAGES/berkalkulator-rust.mo"
+        );
+        let file = File::open(mo_file_path).expect("could not open the catalog");
+        let catalog = Catalog::parse(file).expect("could not parse the catalog");
+        let berkalkulator = Berkalkulator::calculate_netto_ber(brutto_ber_num, catalog);
+        match berkalkulator {
+            Ok(response) => ui.set_results(response.into()),
+            Err(e) => ui.set_results(e.into()),
+        }
     });
     ui.run()
 }
