@@ -22,29 +22,39 @@ msgctxt "AppWindow"
 msgid "Bérkalkulátor 2024"
 msgstr "Salary calculator 2024"
 
-#: ui/appwindow.slint:24
+#: ui/appwindow.slint:25
 msgctxt "AppWindow"
 msgid "Bruttó havi bére (Ft)"
 msgstr "Gross monthly salary (HUF)"
 
-#: ui/appwindow.slint:30
+#: ui/appwindow.slint:41
 msgctxt "AppWindow"
 msgid "Kiszámol"
 msgstr "Calculate"
+
+#: ui/appwindow.slint:31
+msgctxt "AppWindow"
+msgid "Friss házasok kedvezménye"
+msgstr "Discount for newlyweds"
+
+#: ui/appwindow.slint:36
+msgctxt "AppWindow"
+msgid "25 év alattiak szja-mentessége"
+msgstr "Exemption for persons under the age of 25"
 
 #: src/main.rs:25
 msgid "A megadott érték kisebb mint egy!"
 msgstr "Given value less than one!"
 
-#: src/main.rs:30
+#: src/main.rs:29
 msgid "A megadott érték túl magas!"
 msgstr "Given value to high!"
 
-#: src/main.rs:61
+#: src/main.rs:60
 msgid "Járulékok"
 msgstr "Contributions"
 
-#: src/main.rs:62
+#: src/main.rs:61
 msgid "Nyugdíj-biztosítási járulék"
 msgstr "Pension insurance contribution"
 
@@ -52,18 +62,18 @@ msgstr "Pension insurance contribution"
 msgid "Pénzbeni Egészségbiztosítási járulék"
 msgstr "Cash Health Insurance contribution"
 
-#: src/main.rs:64
+#: src/main.rs:65
 msgid "Természetbeni Egészségbiztosítási járulék"
 msgstr "Health insurance contribution in kind"
 
-#: src/main.rs:65
+#: src/main.rs:66
 msgid "SZJA (személyi jövedelemadó)"
 msgstr "SJJA (personal income tax)"
 
-#: src/main.rs:66
+#: src/main.rs:67
 msgid "Munkaerő-piaci járulék"
 msgstr "Labor market contribution"
 
-#: src/main.rs:67
+#: src/main.rs:68
 msgid "Nettó havi bér"
 msgstr "Net monthly salary"

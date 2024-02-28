@@ -1,10 +1,10 @@
-import { Button, VerticalBox, GridBox, LineEdit } from "std-widgets.slint";
+import { Button, VerticalBox, GridBox, LineEdit, CheckBox } from "std-widgets.slint";
 
 export component AppWindow inherits Window {
     title: @tr("Bérkalkulátor");
     in property <string> results: "";
-    callback divide-income(string);
-    background: black;
+    callback divide-income(string, bool, bool);
+    background: darkviolet;
     GridLayout {
         padding: 40px;
         spacing: 25px;
@@ -12,7 +12,7 @@ export component AppWindow inherits Window {
             Text {
                 text: @tr("Bérkalkulátor 2024");
                 horizontal-alignment: center;
-                color: #a600ff;
+                color: white;
                 font-size: 24px;
                 font-weight: 1000;
             }
@@ -27,11 +27,21 @@ export component AppWindow inherits Window {
             }
         }
         Row {
+            friss_hazas_box := CheckBox {
+                text: @tr("Friss házasok kedvezménye");
+            }         
+        }
+        Row {
+            szja_mentes := CheckBox {
+                text: @tr("25 év alattiak szja-mentessége");
+            }         
+        }
+        Row {
             Button {
                 text: @tr("Kiszámol");
                 primary: true;
                 height: 40px;
-                clicked => {divide-income(income.text)}
+                clicked => {divide-income(income.text, friss-hazas-box.checked, szja-mentes.checked)}
             }
         }
         Row {

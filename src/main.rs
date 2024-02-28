@@ -8,6 +8,7 @@ slint::include_modules!();
 const ONE: f64 = 1.00;
 const ZERO: f64 = 0.00;
 const ONE_HUNDRED_MILLION: f64 = 100000000.00;
+const FIVE_THOUSAND: f64 = 5000.00;
 
 enum Jarulek {
     NyugdijBizt(f64),
@@ -20,7 +21,12 @@ enum Jarulek {
 struct Berkalkulator {}
 
 impl Berkalkulator {
-    fn calculate_netto_ber(brutto_ber: f64, catalog: Catalog) -> Result<String, String> {
+    fn calculate_netto_ber(
+        brutto_ber: f64,
+        friss_hazas: bool,
+        szja_mentes: bool,
+        catalog: Catalog,
+    ) -> Result<String, String> {
         if brutto_ber <= ZERO {
             let error_msg = catalog.gettext("A megadott érték kisebb mint egy!");
             return Err(error_msg.to_owned());
@@ -47,8 +53,18 @@ impl Berkalkulator {
                     calculated_jarulekok_map.insert("term_egeszseg_bizt", brutto_ber * amount);
                 }
                 Jarulek::SZJA(amount) => {
+                    let mut calculated_szja;
                     sum_of_jarulekok = sum_of_jarulekok + amount;
-                    calculated_jarulekok_map.insert("szja", brutto_ber * amount);
+                    if friss_hazas == true {
+                        calculated_szja = (brutto_ber * amount) - FIVE_THOUSAND;
+                    } else {
+                        calculated_szja = brutto_ber * amount;
+                    }
+                    if szja_mentes == true {
+                        calculated_szja = ZERO;
+                        sum_of_jarulekok = sum_of_jarulekok - amount;
+                    }
+                    calculated_jarulekok_map.insert("szja", calculated_szja);
                 }
                 Jarulek::MunkaeroPiaci(amount) => {
                     sum_of_jarulekok = sum_of_jarulekok + amount;
@@ -56,7 +72,10 @@ impl Berkalkulator {
                 }
             }
         }
-        let netto_num: f64 = brutto_ber * (ONE - sum_of_jarulekok);
+        let mut netto_num: f64 = brutto_ber * (ONE - sum_of_jarulekok);
+        if friss_hazas == true {
+            netto_num = netto_num - FIVE_THOUSAND;
+        }
         let jarulekok_text = catalog.gettext("Járulékok");
         let nyugdij_bizt_jarulek_text = catalog.gettext("Nyugdíj-biztosítási járulék");
         let penzbeni_egeszsegbizt_jarulek_text =
@@ -86,28 +105,35 @@ fn main() -> Result<(), slint::PlatformError> {
 
     let ui: AppWindow = AppWindow::new()?;
     let ui_handle: Weak<AppWindow> = ui.as_weak();
-    ui.on_divide_income(move |string: SharedString| {
-        let ui: AppWindow = ui_handle.unwrap();
-        let brutto_ber = string.trim().parse();
-        let mut brutto_ber_num: f64 = ZERO;
-        match brutto_ber {
-            Ok(response) => {
-                brutto_ber_num = response;
+    ui.on_divide_income(
+        move |string: SharedString, friss_hazas: bool, szja_mentes: bool| {
+            let ui: AppWindow = ui_handle.unwrap();
+            let brutto_ber = string.trim().parse();
+            let mut brutto_ber_num: f64 = ZERO;
+            match brutto_ber {
+                Ok(response) => {
+                    brutto_ber_num = response;
+                }
+                Err(e) => ui.set_results(e.to_string().into()),
             }
-            Err(e) => ui.set_results(e.to_string().into()),
-        }
 
-        let mo_file_path = concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/i18n/en/LC_MESSAGES/berkalkulator-rust.mo"
-        );
-        let file = File::open(mo_file_path).expect("could not open the catalog");
-        let catalog = Catalog::parse(file).expect("could not parse the catalog");
-        let berkalkulator = Berkalkulator::calculate_netto_ber(brutto_ber_num, catalog);
-        match berkalkulator {
-            Ok(response) => ui.set_results(response.into()),
-            Err(e) => ui.set_results(e.into()),
-        }
-    });
+            let mo_file_path = concat!(
+                env!("CARGO_MANIFEST_DIR"),
+                "/i18n/en/LC_MESSAGES/berkalkulator-rust.mo"
+            );
+            let file = File::open(mo_file_path).expect("could not open the catalog");
+            let catalog = Catalog::parse(file).expect("could not parse the catalog");
+            let berkalkulator = Berkalkulator::calculate_netto_ber(
+                brutto_ber_num,
+                friss_hazas,
+                szja_mentes,
+                catalog,
+            );
+            match berkalkulator {
+                Ok(response) => ui.set_results(response.into()),
+                Err(e) => ui.set_results(e.into()),
+            }
+        },
+    );
     ui.run()
 }
