@@ -2,9 +2,13 @@
 
 1. Build with cargo
     ```
+    cargo install cargo-generate
+    ```
+2. Build with cargo
+    ```
     cargo build
     ```
-2. Run the application binary
+3. Run the application binary
      ```
      cargo run
      ```
