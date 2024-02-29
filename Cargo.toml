@@ -10,7 +10,9 @@ description = "A desktop app that calculating Hungarian gross income"
 
 [dependencies]
 gettext = {version = "0.4.0", optional = false}
+log = "=0.4.21"
 slint = {version = "1.4", optional = false, features = ["gettext"]}
+sys-locale = "0.3.1"
 
 [build-dependencies]
 slint-build = "1.4"

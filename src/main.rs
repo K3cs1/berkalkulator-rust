@@ -2,6 +2,8 @@ use gettext::Catalog;
 use slint::{SharedString, Weak};
 use std::collections::HashMap;
 use std::fs::File;
+use sys_locale::get_locale;
+use log::{info, warn};
 
 slint::include_modules!();
 
@@ -29,10 +31,12 @@ impl Berkalkulator {
     ) -> Result<String, String> {
         if brutto_ber <= ZERO {
             let error_msg = catalog.gettext("A megadott érték kisebb mint egy!");
+            warn!("{}", error_msg);
             return Err(error_msg.to_owned());
         }
         if brutto_ber > ONE_HUNDRED_MILLION {
             let error_msg = catalog.gettext("A megadott érték túl magas!");
+            warn!("{}", error_msg);
             return Err(error_msg.to_owned());
         }
         let jarulekok: Vec<Jarulek> = Self::init_jarulekok();
@@ -86,6 +90,8 @@ impl Berkalkulator {
         let munkaero_piaci_jarulek_text = catalog.gettext("Munkaerő-piaci járulék");
         let netto_havi_ber_text = catalog.gettext("Nettó havi bér");
         let result: String = format!("{}: \n\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n\n{}: {:.2} Ft", jarulekok_text, nyugdij_bizt_jarulek_text, calculated_jarulekok_map.get("nyugdij_bizt").unwrap(), penzbeni_egeszsegbizt_jarulek_text, calculated_jarulekok_map.get("penzbeni_egeszseg_bizt").unwrap(), termeszetbeni_egeszsegbizt_jarulek_text, calculated_jarulekok_map.get("term_egeszseg_bizt").unwrap(), szja_text, calculated_jarulekok_map.get("szja").unwrap(), munkaero_piaci_jarulek_text, calculated_jarulekok_map.get("munkaero_piaci").unwrap(), netto_havi_ber_text, netto_num);
+        
+        info!("{}", result);
         Ok(result)
     }
 
@@ -114,9 +120,15 @@ fn main() -> Result<(), slint::PlatformError> {
                 Ok(response) => {
                     brutto_ber_num = response;
                 }
-                Err(e) => ui.set_results(e.to_string().into()),
+                Err(e) => {
+                    warn!("{}", e.to_string());
+                    ui.set_results(e.to_string().into())
+                },
             }
 
+            let locale = get_locale().unwrap_or_else(|| String::from("hu-HU"));
+            info!("{}", locale);
+            
             let mo_file_path = concat!(
                 env!("CARGO_MANIFEST_DIR"),
                 "/i18n/en/LC_MESSAGES/berkalkulator-rust.mo"
@@ -131,7 +143,10 @@ fn main() -> Result<(), slint::PlatformError> {
             );
             match berkalkulator {
                 Ok(response) => ui.set_results(response.into()),
-                Err(e) => ui.set_results(e.into()),
+                Err(e) => {
+                    warn!("Error during calculation");
+                    ui.set_results(e.into())
+                },
             }
         },
     );
