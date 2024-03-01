@@ -31,12 +31,12 @@ impl Berkalkulator {
         catalog: Catalog,
     ) -> Result<String, String> {
         if brutto_ber <= ZERO {
-            let error_msg = catalog.gettext("Given value less than one!");
+            let error_msg = i18n!(catalog, "Given value less than one!");
             warn!("{}", error_msg);
             return Err(error_msg.to_owned());
         }
         if brutto_ber > ONE_HUNDRED_MILLION {
-            let error_msg = catalog.gettext("Given value to high!");
+            let error_msg = i18n!(catalog, "Given value to high!");
             warn!("{}", error_msg);
             return Err(error_msg.to_owned());
         }

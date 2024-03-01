@@ -11,24 +11,3 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-
-msgid "Contributions"
-msgstr ""
-
-msgid "Pension insurance contribution"
-msgstr ""
-
-msgid "Cash Health Insurance contribution"
-msgstr ""
-
-msgid "Health insurance contribution in kind"
-msgstr ""
-
-msgid "SJJA (personal income tax)"
-msgstr ""
-
-msgid "Labor market contribution"
-msgstr ""
-
-msgid "Net monthly salary"
-msgstr ""
