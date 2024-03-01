@@ -1,7 +1,7 @@
 import { Button, VerticalBox, GridBox, LineEdit, CheckBox } from "std-widgets.slint";
 
 export component AppWindow inherits Window {
-    title: @tr("Bérkalkulátor");
+    title: @tr("Salary calculator");
     in property <string> results: "";
     callback divide-income(string, bool, bool);
     background: darkviolet;
@@ -10,7 +10,7 @@ export component AppWindow inherits Window {
         spacing: 25px;
         Row {
             Text {
-                text: @tr("Bérkalkulátor 2024");
+                text: @tr("Salary calculator 2024");
                 horizontal-alignment: center;
                 color: white;
                 font-size: 24px;
@@ -22,23 +22,23 @@ export component AppWindow inherits Window {
                 input-type: number;
                 font-size: 16px;            
                 horizontal-alignment: center;
-                placeholder-text: @tr("Bruttó havi bére (Ft)");
+                placeholder-text: @tr("Gross monthly salary (HUF)");
                 height: 40px;
             }
         }
         Row {
             friss_hazas_box := CheckBox {
-                text: @tr("Friss házasok kedvezménye");
+                text: @tr("Discount for newlyweds");
             }         
         }
         Row {
             szja_mentes := CheckBox {
-                text: @tr("25 év alattiak szja-mentessége");
+                text: @tr("Exemption for persons under the age of 25");
             }         
         }
         Row {
             Button {
-                text: @tr("Kiszámol");
+                text: @tr("Calculate");
                 primary: true;
                 height: 40px;
                 clicked => {divide-income(income.text, friss-hazas-box.checked, szja-mentes.checked)}
