@@ -4,17 +4,28 @@ export component AppWindow inherits Window {
     title: @tr("Salary calculator");
     in property <string> results: "";
     callback divide-income(string, bool, bool, bool);
-    background: darkviolet;
+    background: darkolivegreen;
     GridLayout {
         padding: 40px;
         spacing: 25px;
         Row {
-            Text {
-                text: @tr("Salary calculator 2024");
-                horizontal-alignment: center;
-                color: white;
-                font-size: 24px;
-                font-weight: 1000;
+            GridLayout {
+                Row {
+                    Image {
+                        image-fit: ImageFit.contain;
+                        height: 160px;
+                        width: 120px;
+                        source: @image-url("cash-1296584_640.png");
+                    }
+                    Text {
+                        text: @tr("Salary calculator 2024");
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                        color: white;
+                        font-size: 24px;
+                        font-weight: 1000;
+                    }
+                }
             }
         }
         Row {
