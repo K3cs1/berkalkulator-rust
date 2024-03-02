@@ -160,6 +160,8 @@ impl Berkalkulator {
 }
 
 fn main() -> Result<(), slint::PlatformError> {
+    std::env::set_var("RUST_LOG", "debug");
+    env_logger::init();
     init_i18n!("berkalkulator-rust", en, hu);
     slint::init_translations!(concat!(env!("CARGO_MANIFEST_DIR"), "/i18n/"));
 
