@@ -1,9 +1,9 @@
-import { Button, VerticalBox, GridBox, LineEdit, CheckBox } from "std-widgets.slint";
+import { Button, VerticalBox, GridBox, LineEdit, CheckBox, Switch } from "std-widgets.slint";
 
 export component AppWindow inherits Window {
     title: @tr("Salary calculator");
     in property <string> results: "";
-    callback divide-income(string, bool, bool);
+    callback divide-income(string, bool, bool, bool);
     background: darkviolet;
     GridLayout {
         padding: 40px;
@@ -37,11 +37,16 @@ export component AppWindow inherits Window {
             }         
         }
         Row {
+            csv_export := Switch {
+                text: @tr("Export result to CSV file");
+            }
+        }
+        Row {
             Button {
                 text: @tr("Calculate");
                 primary: true;
                 height: 40px;
-                clicked => {divide-income(income.text, friss-hazas-box.checked, szja-mentes.checked)}
+                clicked => {divide-income(income.text, friss-hazas-box.checked, szja-mentes.checked, csv_export.checked)}
             }
         }
         Row {

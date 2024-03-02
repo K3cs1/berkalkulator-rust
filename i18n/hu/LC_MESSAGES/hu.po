@@ -42,6 +42,11 @@ msgctxt "AppWindow"
 msgid "Exemption for persons under the age of 25"
 msgstr "25 év alattiak szja-mentessége"
 
+#: ui/appwindow.slint:41
+msgctxt "AppWindow"
+msgid "Export result to CSV file"
+msgstr "Eredmény kiírása CSV fájlba"
+
 #: src/main.rs:25
 msgid "Given value less than one!"
 msgstr "A megadott érték kisebb mint egy!"
