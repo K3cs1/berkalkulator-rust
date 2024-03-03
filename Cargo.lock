@@ -476,8 +476,6 @@ dependencies = [
  "csv",
  "env_logger",
  "gettext",
- "gettext-macros",
- "gettext-utils",
  "log",
  "serde",
  "slint",
@@ -1740,19 +1738,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gettext-macros"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "649db3b5cda06091ea6aacb9f66f7002dfe885505b324b8ed795261253ffc2b3"
-dependencies = [
- "gettext",
- "gettext-utils",
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
 name = "gettext-rs"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1771,12 +1756,6 @@ dependencies = [
  "cc",
  "temp-dir",
 ]
-
-[[package]]
-name = "gettext-utils"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46dd079379f756f6a1ae74b051813e242893f84fbf6ac898bce827fc77958d70"
 
 [[package]]
 name = "gif"

@@ -1,5 +1,4 @@
 use gettext::Catalog;
-use gettext_macros::{i18n, init_i18n};
 use log::{info, warn};
 use slint::{SharedString, Weak};
 use std::collections::HashMap;
@@ -48,12 +47,12 @@ impl Berkalkulator {
         catalog: Catalog,
     ) -> Result<String, String> {
         if brutto_ber <= ZERO {
-            let error_msg = i18n!(catalog, "Given value less than one!");
+            let error_msg = catalog.gettext("Given value less than one!");
             warn!("{}", error_msg);
             return Err(error_msg.to_owned());
         }
         if brutto_ber > ONE_HUNDRED_MILLION {
-            let error_msg = i18n!(catalog, "Given value to high!");
+            let error_msg = catalog.gettext("Given value to high!");
             warn!("{}", error_msg);
             return Err(error_msg.to_owned());
         }
@@ -99,13 +98,13 @@ impl Berkalkulator {
             netto_num = netto_num - FIVE_THOUSAND;
         }
 
-        let jarulekok_text = i18n!(catalog, "Contributions");
-        let nyugdij_bizt_jarulek_text = i18n!(catalog, "Pension insurance contribution");
-        let penzbeni_egeszsegbizt_jarulek_text = i18n!(catalog, "Cash Health Insurance contribution");
-        let termeszetbeni_egeszsegbizt_jarulek_text = i18n!(catalog, "Health insurance contribution in kind");
-        let szja_text = i18n!(catalog, "SJJA (personal income tax)");
-        let munkaero_piaci_jarulek_text = i18n!(catalog, "Labor market contribution");
-        let netto_havi_ber_text = i18n!(catalog, "Net monthly salary");
+        let jarulekok_text = catalog.gettext("Contributions");
+        let nyugdij_bizt_jarulek_text = catalog.gettext("Pension insurance contribution");
+        let penzbeni_egeszsegbizt_jarulek_text = catalog.gettext("Cash Health Insurance contribution");
+        let termeszetbeni_egeszsegbizt_jarulek_text = catalog.gettext("Health insurance contribution in kind");
+        let szja_text = catalog.gettext("SJJA (personal income tax)");
+        let munkaero_piaci_jarulek_text = catalog.gettext("Labor market contribution");
+        let netto_havi_ber_text = catalog.gettext("Net monthly salary");
         let result: String = format!("{}: \n\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n\n{}: {:.2} Ft", 
         jarulekok_text, 
         nyugdij_bizt_jarulek_text, 
@@ -160,10 +159,10 @@ impl Berkalkulator {
 }
 
 fn main() -> Result<(), slint::PlatformError> {
+    std::env::set_var("LANG", "hu");
+    slint::init_translations!(concat!(env!("CARGO_MANIFEST_DIR"), "/i18n/"));
     std::env::set_var("RUST_LOG", "debug");
     env_logger::init();
-    init_i18n!("berkalkulator-rust", en, hu);
-    slint::init_translations!(concat!(env!("CARGO_MANIFEST_DIR"), "/i18n/"));
 
     let ui: AppWindow = AppWindow::new()?;
     let ui_handle: Weak<AppWindow> = ui.as_weak();
