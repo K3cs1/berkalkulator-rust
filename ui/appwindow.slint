@@ -5,16 +5,18 @@ export component AppWindow inherits Window {
     in property <string> results: "";
     callback divide-income(string, bool, bool, bool);
     background: darkolivegreen;
+    width: 450px;
+    height: 600px;
     GridLayout {
-        padding: 40px;
-        spacing: 25px;
+        padding: 10px;
+        spacing: 8px;
         Row {
             GridLayout {
                 Row {
                     Image {
                         image-fit: ImageFit.contain;
-                        height: 160px;
-                        width: 120px;
+                        height: 80px;
+                        width: 60px;
                         source: @image-url("cash-1296584_640.png");
                     }
                     Text {
@@ -22,8 +24,8 @@ export component AppWindow inherits Window {
                         horizontal-alignment: center;
                         vertical-alignment: center;
                         color: white;
-                        font-size: 24px;
-                        font-weight: 1000;
+                        font-size: 20px;
+                        font-weight: 600;
                     }
                 }
             }
@@ -49,7 +51,7 @@ export component AppWindow inherits Window {
         }
         Row {
             csv_export := Switch {
-                text: @tr("Export result to CSV file");
+                text: @tr("Export result to CSVÍ file");
             }
         }
         Row {
@@ -64,12 +66,12 @@ export component AppWindow inherits Window {
             VerticalBox {
                 Rectangle {
                     height: 280px;
-                    width: 500px;
+                    width: 400px;
                     background: #f2f2f2;
                     Text {
                         color: darkblue;
-                        font-size: 16px;
-                        font-weight: 500;
+                        font-size: 12px;
+                        font-weight: 400;
                         text: root.results;
                     }
                 }
