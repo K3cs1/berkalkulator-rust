@@ -14,11 +14,11 @@ env_logger = "0.11.2"
 gettext = {version = "0.4.0", optional = false}
 log = "=0.4.21"
 serde = {version = "1.0.197", optional = false, features = ["derive"]}
-slint = {version = "1.4", optional = false, features = ["gettext"]}
+slint = {version = "1.5.0", optional = false, features = ["gettext"]}
 sys-locale = "0.3.1"
 
 [build-dependencies]
-slint-build = "1.4"
+slint-build = "1.5.0"
 
 [package.metadata.bundle]
 name = "Berkalkulator"
