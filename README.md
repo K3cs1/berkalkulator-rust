@@ -1,6 +1,6 @@
 # Bérkalkulátor 2024 Rust
 
-1. Build with cargo
+1. Install CLI tool
     ```
     cargo install cargo-generate
     ```
