@@ -10,10 +10,10 @@ use serde::{Serialize, Deserialize};
 
 slint::include_modules!();
 
-const ONE: f64 = 1.00;
-const ZERO: f64 = 0.00;
-const ONE_HUNDRED_MILLION: f64 = 100000000.00;
-const FIVE_THOUSAND: f64 = 5000.00;
+const ONE: f64 = 1.0;
+const ZERO: f64 = 0.0;
+const ONE_HUNDRED_MILLION: f64 = 100_000_000.0;
+const FIVE_THOUSAND: f64 = 5_000.0;
 const CSV_PATH: &str = "export.csv";
 
 enum Jarulek {
@@ -23,7 +23,6 @@ enum Jarulek {
     SZJA(f64),
     MunkaeroPiaci(f64),
 }
-
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 struct CsvRecord {
@@ -35,8 +34,7 @@ struct CsvRecord {
     labor_market: f64,
 }
 
-struct Berkalkulator {    
-}
+struct Berkalkulator;
 
 impl Berkalkulator {
     fn calculate_netto_ber(
@@ -52,80 +50,76 @@ impl Berkalkulator {
             return Err(error_msg.to_owned());
         }
         if brutto_ber > ONE_HUNDRED_MILLION {
-            let error_msg = catalog.gettext("Given value to high!");
+            let error_msg = catalog.gettext("Given value too high!");
             warn!("{}", error_msg);
             return Err(error_msg.to_owned());
         }
-        let jarulekok: Vec<Jarulek> = Self::init_jarulekok();
-        let mut sum_of_jarulekok: f64 = ZERO;
-        let mut calculated_jarulekok_map: HashMap<String, f64> = HashMap::new();
+
+        let jarulekok = Self::init_jarulekok();
+        let mut sum_of_jarulekok = ZERO;
+        let mut calculated_jarulekok_map: HashMap<&str, f64> = HashMap::new();
+
         for jarulek in jarulekok.iter() {
             match jarulek {
-                Jarulek::NyugdijBizt(amount) => {
-                    sum_of_jarulekok = sum_of_jarulekok + amount;
-                    calculated_jarulekok_map.insert("nyugdij_bizt".to_owned(), brutto_ber * amount);
-                }
-                Jarulek::PenzbeniEgeszsegBizt(amount) => {
-                    sum_of_jarulekok = sum_of_jarulekok + amount;
-                    calculated_jarulekok_map.insert("penzbeni_egeszseg_bizt".to_owned(), brutto_ber * amount);
-                }
-                Jarulek::TermeszetbeniEgeszsegBizt(amount) => {
-                    sum_of_jarulekok = sum_of_jarulekok + amount;
-                    calculated_jarulekok_map.insert("term_egeszseg_bizt".to_owned(), brutto_ber * amount);
-                }
-                Jarulek::SZJA(amount) => {
-                    let mut calculated_szja;
-                    sum_of_jarulekok = sum_of_jarulekok + amount;
-                    if friss_hazas == true {
-                        calculated_szja = (brutto_ber * amount) - FIVE_THOUSAND;
+                Jarulek::SZJA(rate) => {
+                    let mut contribution = brutto_ber * rate;
+                    if friss_hazas {
+                        contribution -= FIVE_THOUSAND;
+                    }
+                    if szja_mentes {
+                        contribution = ZERO;
+                        // Do not add the SZJA rate if tax-exempt
                     } else {
-                        calculated_szja = brutto_ber * amount;
+                        sum_of_jarulekok += rate;
                     }
-                    if szja_mentes == true {
-                        calculated_szja = ZERO;
-                        sum_of_jarulekok = sum_of_jarulekok - amount;
-                    }
-                    calculated_jarulekok_map.insert("szja".to_owned(), calculated_szja);
+                    calculated_jarulekok_map.insert("szja", contribution);
                 }
-                Jarulek::MunkaeroPiaci(amount) => {
-                    sum_of_jarulekok = sum_of_jarulekok + amount;
-                    calculated_jarulekok_map.insert("munkaero_piaci".to_owned(), brutto_ber * amount);
+                Jarulek::NyugdijBizt(rate) => {
+                    sum_of_jarulekok += rate;
+                    calculated_jarulekok_map.insert("nyugdij_bizt", brutto_ber * rate);
+                }
+                Jarulek::PenzbeniEgeszsegBizt(rate) => {
+                    sum_of_jarulekok += rate;
+                    calculated_jarulekok_map.insert("penzbeni_egeszseg_bizt", brutto_ber * rate);
+                }
+                Jarulek::TermeszetbeniEgeszsegBizt(rate) => {
+                    sum_of_jarulekok += rate;
+                    calculated_jarulekok_map.insert("term_egeszseg_bizt", brutto_ber * rate);
+                }
+                Jarulek::MunkaeroPiaci(rate) => {
+                    sum_of_jarulekok += rate;
+                    calculated_jarulekok_map.insert("munkaero_piaci", brutto_ber * rate);
                 }
             }
         }
-        let mut netto_num: f64 = brutto_ber * (ONE - sum_of_jarulekok);
-        if friss_hazas == true {
-            netto_num = netto_num - FIVE_THOUSAND;
+
+        let mut netto_num = brutto_ber * (ONE - sum_of_jarulekok);
+        if friss_hazas {
+            netto_num -= FIVE_THOUSAND;
         }
 
-        let jarulekok_text = catalog.gettext("Contributions");
-        let nyugdij_bizt_jarulek_text = catalog.gettext("Pension insurance contribution");
-        let penzbeni_egeszsegbizt_jarulek_text = catalog.gettext("Cash Health Insurance contribution");
-        let termeszetbeni_egeszsegbizt_jarulek_text = catalog.gettext("Health insurance contribution in kind");
-        let szja_text = catalog.gettext("SJJA (personal income tax)");
-        let munkaero_piaci_jarulek_text = catalog.gettext("Labor market contribution");
-        let netto_havi_ber_text = catalog.gettext("Net monthly salary");
-        let result: String = format!("{}: \n\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n\n{}: {:.2} Ft", 
-        jarulekok_text, 
-        nyugdij_bizt_jarulek_text, 
-        calculated_jarulekok_map.get("nyugdij_bizt").unwrap(), 
-        penzbeni_egeszsegbizt_jarulek_text, 
-        calculated_jarulekok_map.get("penzbeni_egeszseg_bizt").unwrap(), 
-        termeszetbeni_egeszsegbizt_jarulek_text, 
-        calculated_jarulekok_map.get("term_egeszseg_bizt").unwrap(), 
-        szja_text, 
-        calculated_jarulekok_map.get("szja").unwrap(), 
-        munkaero_piaci_jarulek_text, 
-        calculated_jarulekok_map.get("munkaero_piaci").unwrap(), 
-        netto_havi_ber_text, 
-        netto_num);
+        let result = format!(
+            "{}: \n\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n{}: {:.2} Ft\n\n{}: {:.2} Ft",
+            catalog.gettext("Contributions"),
+            catalog.gettext("Pension insurance contribution"),
+            calculated_jarulekok_map.get("nyugdij_bizt").unwrap(),
+            catalog.gettext("Cash Health Insurance contribution"),
+            calculated_jarulekok_map.get("penzbeni_egeszseg_bizt").unwrap(),
+            catalog.gettext("Health insurance contribution in kind"),
+            calculated_jarulekok_map.get("term_egeszseg_bizt").unwrap(),
+            catalog.gettext("SJJA (personal income tax)"),
+            calculated_jarulekok_map.get("szja").unwrap(),
+            catalog.gettext("Labor market contribution"),
+            calculated_jarulekok_map.get("munkaero_piaci").unwrap(),
+            catalog.gettext("Net monthly salary"),
+            netto_num
+        );
 
         info!("{}", result);
-        if csv_export == true {
-            let res = Self::export_calculations_to_csv(&calculated_jarulekok_map, &netto_num);
-            match res {
+        if csv_export {
+            match Self::export_calculations_to_csv(&calculated_jarulekok_map, netto_num) {
                 Ok(()) => info!("export.csv created"),
-                Err(message) => warn!("{}", message)
+                Err(err) => warn!("{}", err),
             }
         }
         Ok(result)
@@ -141,71 +135,78 @@ impl Berkalkulator {
         ]
     }
 
-    fn export_calculations_to_csv(calculated_jarulekok_map: &HashMap<String, f64>, netto_num: &f64) -> Result<(), Box<dyn Error>> {
+    fn export_calculations_to_csv(
+        calculated_jarulekok_map: &HashMap<&str, f64>,
+        netto_num: f64,
+    ) -> Result<(), Box<dyn Error>> {
         let mut writer = Writer::from_path(CSV_PATH)?;
-        writer.serialize(CsvRecord{
-            labor_market: *calculated_jarulekok_map.get("munkaero_piaci").unwrap(),
+        let record = CsvRecord {
+            pension_insurance: *calculated_jarulekok_map.get("nyugdij_bizt").unwrap(),
             cash_health_insurance: *calculated_jarulekok_map.get("penzbeni_egeszseg_bizt").unwrap(),
             health_insurance: *calculated_jarulekok_map.get("term_egeszseg_bizt").unwrap(),
             sjja: *calculated_jarulekok_map.get("szja").unwrap(),
-            pension_insurance: *calculated_jarulekok_map.get("nyugdij_bizt").unwrap(),
-            net_monthly_salary: *netto_num
-        })?;
-
+            labor_market: *calculated_jarulekok_map.get("munkaero_piaci").unwrap(),
+            net_monthly_salary: netto_num,
+        };
+        writer.serialize(record)?;
         writer.flush()?;
-
         Ok(())
     }
 }
 
 fn main() -> Result<(), slint::PlatformError> {
-    std::env::set_var("LANG", "hu");
-    slint::init_translations!(concat!(env!("CARGO_MANIFEST_DIR"), "/i18n/"));
-    std::env::set_var("RUST_LOG", "debug");
+    unsafe {
+        std::env::set_var("LANG", "hu");
+        std::env::set_var("RUST_LOG", "debug");
+    }
     env_logger::init();
+    slint::init_translations!(concat!(env!("CARGO_MANIFEST_DIR"), "/i18n/"));
 
     let ui: AppWindow = AppWindow::new()?;
     let ui_handle: Weak<AppWindow> = ui.as_weak();
-    ui.on_divide_income(
-        move |string: SharedString, friss_hazas: bool, szja_mentes: bool, csv_export: bool| {
-            let ui: AppWindow = ui_handle.unwrap();
-            let brutto_ber = string.trim().parse();
-            let mut brutto_ber_num: f64 = ZERO;
-            match brutto_ber {
-                Ok(response) => {
-                    brutto_ber_num = response;
-                }
-                Err(e) => {
-                    warn!("{}", e.to_string());
-                    ui.set_results(e.to_string().into())
-                }
+
+    ui.on_divide_income(move |input: SharedString, friss_hazas: bool, szja_mentes: bool, csv_export: bool| {
+        // Upgrade the weak reference to get a usable instance.
+        let ui = match ui_handle.upgrade() {
+            Some(ui) => ui,
+            None => return, // If the UI is no longer available, exit the closure.
+        };
+
+        let brutto_ber_num: f64 = match input.trim().parse() {
+            Ok(num) => num,
+            Err(e) => {
+                let err_msg = e.to_string();
+                warn!("{}", err_msg);
+                ui.set_results(err_msg.into());
+                return;
             }
+        };
 
-            let locale = get_locale().unwrap_or_else(|| String::from("hu-HU"));
-            info!("{}", locale);
+        let locale = sys_locale::get_locale().unwrap_or_else(|| "hu-HU".to_string());
+        info!("Locale: {}", locale);
 
-            let mo_file_path = concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/i18n/hu/LC_MESSAGES/berkalkulator-rust.mo"
-            );
-            let file = File::open(mo_file_path).expect("could not open the catalog");
-            let catalog = Catalog::parse(file).expect("could not parse the catalog");
+        let mo_file_path = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/i18n/hu/LC_MESSAGES/berkalkulator-rust.mo"
+        );
+        let file = std::fs::File::open(mo_file_path)
+            .expect("Could not open the catalog file");
+        let catalog = gettext::Catalog::parse(file)
+            .expect("Could not parse the catalog");
 
-            let berkalkulator = Berkalkulator::calculate_netto_ber(
-                brutto_ber_num,
-                friss_hazas,
-                szja_mentes,
-                csv_export,
-                catalog,
-            );
-            match berkalkulator {
-                Ok(response) => ui.set_results(response.into()),
-                Err(e) => {
-                    warn!("Error during calculation");
-                    ui.set_results(e.into())
-                }
+        match Berkalkulator::calculate_netto_ber(
+            brutto_ber_num,
+            friss_hazas,
+            szja_mentes,
+            csv_export,
+            catalog,
+        ) {
+            Ok(result) => ui.set_results(result.into()),
+            Err(err) => {
+                warn!("Error during calculation: {}", err);
+                ui.set_results(err.into());
             }
-        },
-    );
+        }
+    });
     ui.run()
 }
